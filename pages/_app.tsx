@@ -1,10 +1,8 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import Link from 'next/link'
-import Router, { useRouter } from 'next/router'
 
 export default function App({ Component, pageProps }: AppProps) {
-  const router = useRouter()
   return (
     <div
       style={{
@@ -15,7 +13,6 @@ export default function App({ Component, pageProps }: AppProps) {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          // justifyContent: 'space-evenly',
           zIndex: 2,
           backgroundColor: 'white',
           height: '50px',
