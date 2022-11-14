@@ -55,7 +55,6 @@ export default function ZustandWithClusters() {
 
   return (
     <div>
-      refresh
       <Wrapper
         apiKey={'AIzaSyCjoPYJRx3eJvqVmmS6d6LzAo-BScYcraI'}
         libraries={['marker']} // required for advanced markers
@@ -315,16 +314,6 @@ const calculateSuperCluster = ({
     },
   })
   index.load(points)
-  console.log(
-    'settinglocationsAftersuper IN GETCLUSTER',
-    locations.length,
-    zoom,
-    bounds,
-    index.getClusters(
-      [bounds.west, bounds.south, bounds.east, bounds.north],
-      zoom
-    )
-  )
   return index.getClusters(
     [bounds.west, bounds.south, bounds.east, bounds.north],
     zoom

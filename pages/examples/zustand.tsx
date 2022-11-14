@@ -37,7 +37,7 @@ export default function BasicWithZustand() {
   return (
     <div>
       <Wrapper
-        apiKey={'AIzaSyCjoPYJRx3eJvqVmmS6d6LzAo-BScYcraI'}
+        apiKey={process.env.GOOGLEMAPS_APIKEY ?? ''}
         libraries={['marker']} // required for advanced markers
         version='beta' // required for advanced markers (currently)
       >
@@ -80,6 +80,8 @@ const Map = ({ style, children, ...options }: MapProps) => {
       ;['idle'].forEach((eventName) =>
         google.maps.event.clearListeners(zustandMap, eventName)
       )
+
+      zustandMap.set('isAutoPanning', true)
 
       zustandMap.addListener('idle', () => {
         const bounds = zustandMap.getBounds()?.toJSON()
@@ -152,7 +154,7 @@ const Marker = ({ location }: MarkerProps) => {
 
   return (
     // once mounted, google will move the ref div to a different part of the dom (it will nest it inside a 'marker-view' div). So when react tries to unmount the advancedMarkerRef div, it will be gone! The simple solution is to wrap the advancedMarkerRef div in another stable element, such as a div, that google will not move
-    <div id='stable'>
+    <div id={`stable-${location.id}`}>
       <div
         onClick={() => {
           // this does nothing! After google takes this ref and moved it to the zustandMap element, it will wrap it in a div that blocks this click target. Instead, add a listener to the marker after it mounts (in a useEffect)
@@ -171,7 +173,7 @@ const Marker = ({ location }: MarkerProps) => {
           display: 'grid',
           placeItems: 'center',
           padding: '2px 6px 2px 6px',
-          // zIndex: 2 // does not work! after google moves this ref element, it will manage the Index on the advandcedMarkerView // you can modify it in a useEffect
+          // zIndex: selected ? 3 : 1 // does not work! after google moves this ref element, it will manage the Index on the advandcedMarkerView // you can modify it in a useEffect
         }}>
         {location.id}
       </div>
@@ -180,6 +182,8 @@ const Marker = ({ location }: MarkerProps) => {
 }
 
 // google-recommended helper functions below
+// import { isLatLngLiteral } from '@googlemaps/typescript-guards'
+// import { createCustomEqual } from 'fast-equals'
 
 function useDeepCompareEffectForMaps(
   callback: React.EffectCallback,
