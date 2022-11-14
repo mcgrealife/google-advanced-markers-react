@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react'
 // install types from https://www.npmjs.com/package/@types/google.maps
 
 export default function Basic() {
+  const [map, setMap] = useState<google.maps.Map>()
   const onMapClick = () => {
     console.log('map onClick')
   }
@@ -25,11 +26,13 @@ export default function Basic() {
           zoom={13}
           onMapClick={onMapClick}
           onMapIdle={onMapIdle}
+          map={map}
+          setMap={setMap}
           style={{ flexGrow: '1', height: '100vh', width: '100vw' }}>
           {locations.map((t, index) => (
-            // @ts-ignore - the map object is passed via the Map's cloneChild function
             <Marker
               key={index}
+              map={map}
               advancedMarkerViewOptions={{
                 position: {
                   lat: t.latitude,
@@ -49,17 +52,20 @@ interface MapProps extends google.maps.MapOptions {
   onMapClick?: (e: google.maps.MapMouseEvent) => void
   onMapIdle?: (map: google.maps.Map) => void
   children?: React.ReactNode // missing from documentation
+  map: google.maps.Map | undefined
+  setMap: React.Dispatch<React.SetStateAction<google.maps.Map | undefined>>
 }
 
 const Map = ({
   onMapClick,
   onMapIdle,
+  map,
+  setMap,
   style,
   children,
   ...options
 }: MapProps) => {
   const ref = useRef<HTMLDivElement>(null)
-  const [map, setMap] = useState<google.maps.Map>()
 
   useEffect(() => {
     if (ref.current && !map) {
@@ -94,12 +100,7 @@ const Map = ({
   return (
     <>
       <div id='map' ref={ref} style={style}>
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child)) {
-            // @ts-ignore for now
-            return React.cloneElement(child, { map }) // this is how the Marker components get the map prop. Must be {deconstructed}
-          }
-        })}
+        {children}
       </div>
     </>
   )
@@ -107,7 +108,7 @@ const Map = ({
 
 interface MarkerProps {
   advancedMarkerViewOptions: google.maps.marker.AdvancedMarkerViewOptions
-  map: google.maps.Map // we do not explicity pass this prop on the Marker component; rather, react.cloneElement provides this in the Map return, when cloning children!
+  map: google.maps.Map | undefined
 }
 
 const Marker = ({ advancedMarkerViewOptions, map }: MarkerProps) => {
