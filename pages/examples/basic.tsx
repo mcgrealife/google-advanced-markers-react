@@ -28,6 +28,7 @@ export default function Basic() {
           onMapIdle={onMapIdle}
           map={map}
           setMap={setMap}
+          gestureHandling='greedy'
           style={{ flexGrow: '1', height: '100vh', width: '100vw' }}>
           {locations.map((t, index) => (
             <Marker
